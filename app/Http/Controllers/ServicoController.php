@@ -91,7 +91,7 @@ class ServicoController extends Controller
                 $array_servico['id'] = $Servico->id_serv;
                 $array_servico['titulo'] = $Servico->titulo_serv;
                 $array_servico['descricao'] = $Servico->descricao_serv;
-                $array_servico['valor'] = $Servico->valor_serv;
+                $array_servico['valor'] = number_format($Servico->valor_serv, 2, ',', '.');
                 $array_servico['imagem'] = $Servico->imagem_serv;
             }
             array_push($array_retorno, $array_servico);

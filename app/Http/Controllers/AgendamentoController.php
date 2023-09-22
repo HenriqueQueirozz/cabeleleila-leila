@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Servico;
 use App\Models\Agendamento;
 use App\Models\AgendamentoServico;
 use App\Http\Controllers\UserController;
@@ -15,22 +17,15 @@ class AgendamentoController extends Controller
         $dados_validados = $request->validate(
             [
                 'usuario_agendamento'       => ['required'],
-                'data_agendamento'          => ['required'],
-                // 'hora_agendamento_servico'  => ['required'],
-                // 'servico_id'                => ['required'],
+                'data_agendamento'          => ['required']
             ],
             [
                 'usuario_agendamento.required' => 'É necessário um Usuário para o agendamento.',
                 'data_agendamento.required' => 'É necessário informar a data desejada para o agendamento.',
-                // 'hora_agendamento_servico.required' => 'É necessário informar a hora desejada para o agendamento.',
-                // 'servico_id.required' => 'É necessário informar o servico desejado para o agendamento.'
             ]
         );
 
         $formulario = $request->all();
-        print_r('<pre>');
-        print_r($formulario);
-        exit;
 
         $Agendamento = new Agendamento;
         $Agendamento->fk_usuario_agen = $formulario["usuario_agendamento"];
@@ -39,14 +34,45 @@ class AgendamentoController extends Controller
         $Agendamento->save();
 
         $AgendamentoServico = new AgendamentoServicoController;
-        $arrayAgendamentoServico = [
-                                    'fk_agendamento' => $Agendamento->id_agen,            
-                                    'fk_servico' => $formulario['servico_id'],
-                                    'horario_agse' => $formulario['hora_agendamento_servico']
-                                    ];
-        $AgendamentoServico->store($arrayAgendamentoServico);
+        $ServicoController = new ServicoController;
+        $servicos_disponiveis = $ServicoController->listagemServicos('A');
 
-        $this->index_listagem();
+        for($i = 0; $i < count($servicos_disponiveis); $i++) {
+            if($formulario['horario_escolhido_'.$servicos_disponiveis[$i]['id']]){
+                $horario = $formulario['horario_escolhido_'.$servicos_disponiveis[$i]['id']];
+                
+                switch($horario){
+                    case '1':
+                        $horario_escolhido = '08:00';
+                        break;
+                    case '2':
+                        $horario_escolhido = '10:00';
+                        break;
+                    case '3':
+                        $horario_escolhido = '12:00';
+                        break;
+                    case '4':
+                        $horario_escolhido = '14:00';
+                        break;
+                    case '5':
+                        $horario_escolhido = '16:00';
+                        break;
+                    case '6':
+                        $horario_escolhido = '1*:00';
+                        break;
+                }
+
+                $arrayAgendamentoServico = [
+                                            'fk_agendamento' => $Agendamento->id_agen,            
+                                            'fk_servico' => $servicos_disponiveis[$i]['id'],
+                                            'horario_agse' => $horario_escolhido
+                                            ];
+
+                $AgendamentoServico->store($arrayAgendamentoServico);
+            }
+        }
+
+        return $this->index_listagem();
     }
 
     public function update(Request $request){
@@ -94,19 +120,25 @@ class AgendamentoController extends Controller
 
     public function index_listagem(){
         $AgendamentoServicos = AgendamentoServico::all();
+        $array_retorno = [];
 
         foreach ($AgendamentoServicos as $AgendamentoServico) {
-            $array_usuario = [];
-            // $array_usuario['id'] = $Usuario->id_usu;
-            // $array_usuario['nome'] = $Usuario->name_usu;
-            // $array_usuario['email'] = $Usuario->email_usu;
-            // $array_usuario['data_nascimento'] = $Usuario->dataNasc_usu;
-            // $array_usuario['telefone'] = $Usuario->telefone_usu;
-            // $array_usuario['perfil'] = $Usuario->perfil_usu;
+            $agendamento = Agendamento::find($AgendamentoServico['fk_agendamento']);
+            $servico = Servico::find($AgendamentoServico['fk_servico']);
+            $user = User::find($agendamento->fk_usuario_agen);
 
-            array_push($array_retorno, $array_usuario);
+            $horario = explode('-', $agendamento->data_agen);
+            $horario = implode('/',array_reverse($horario));
+
+            $array_listagem = [];
+            $array_listagem['nome_usuario'] = $user->name_usu;
+            $array_listagem['nome_servico'] = $servico->titulo_serv;
+            $array_listagem['dia_agendamento'] = $horario;
+            $array_listagem['horario_agendamento'] = $AgendamentoServico['horario_agse'];
+
+            array_push($array_retorno, $array_listagem);
         }
 
-        return view('listagem_agendamento', []);
+        return view('listagem_agendamento', ['listagem_agendamentos' => $array_retorno]);
     }
 }
