@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agendamento;
+use App\Models\AgendamentoServico;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\AgendamentoServicoController;
@@ -44,6 +45,8 @@ class AgendamentoController extends Controller
                                     'horario_agse' => $formulario['hora_agendamento_servico']
                                     ];
         $AgendamentoServico->store($arrayAgendamentoServico);
+
+        $this->index_listagem();
     }
 
     public function update(Request $request){
@@ -86,6 +89,24 @@ class AgendamentoController extends Controller
         $servicos_disponiveis = $ServicoController->listagemServicos('A');
         $usuarios = $UserController->listagemUsers();
 
-        return view('agendamento', ['servicos' => $servicos_disponiveis, 'usuarios' => $usuarios]);
+        return view('index', ['servicos' => $servicos_disponiveis, 'usuarios' => $usuarios]);
+    }
+
+    public function index_listagem(){
+        $AgendamentoServicos = AgendamentoServico::all();
+
+        foreach ($AgendamentoServicos as $AgendamentoServico) {
+            $array_usuario = [];
+            // $array_usuario['id'] = $Usuario->id_usu;
+            // $array_usuario['nome'] = $Usuario->name_usu;
+            // $array_usuario['email'] = $Usuario->email_usu;
+            // $array_usuario['data_nascimento'] = $Usuario->dataNasc_usu;
+            // $array_usuario['telefone'] = $Usuario->telefone_usu;
+            // $array_usuario['perfil'] = $Usuario->perfil_usu;
+
+            array_push($array_retorno, $array_usuario);
+        }
+
+        return view('listagem_agendamento', []);
     }
 }

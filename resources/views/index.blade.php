@@ -1,63 +1,70 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title></title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="css/style.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    </head>
-    <body>
-        <nav class="navbar bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand">Leila</a>
-                <button class="btn btn-outline-success" type="submit">Conectar-se</button>
+@extends('layouts.app')
+@section('title', 'Cabeleleira Leila')
+
+@section('content')
+<main class="mx-5 d-flex flex-row justify-content-center">
+    @if ($errors->any())
+        <div class="alert alert-danger mb-5 w-75" role="alert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+        
+    <section class="w-50">
+        <h2 class="mb-5">Agendamentos</h2>
+        <form action="{{ route('agendamento_store') }}" method="post" enctype="multipart/form-data">
+            @csrf
+            <div class="mb-3">
+                <label for="data_agendamento" class="form-label">Usuário</label>
+                <select class="form-select" name="usuario_agendamento" id="usuario_agendamento">
+                    @if(empty($usuarios))
+                        <option>Nenhum usuário cadastrado</option>
+                    @else
+                        @foreach ($usuarios as $usuario)
+                            <option value="{{ $usuario['id'] }}">{{ $usuario['nome'] }}</option>
+                        @endforeach
+                    @endif
+                    
+                </select>
             </div>
-        </nav>
-        <!-- Carrosel -->
-        <!--  -->
-        <!-- <header>
-            <h1>Leila</h1>
-            <button class="btn btn-white">Conectar-se</button>
-        </header>
-        <main>
-            <section id="carrosel">
-                <div>
-                </div>
-            </section>
-            <section id="beneficios">
-                <div><p>O catálogo de serviços mais completo da região.</p></div>
-                <div><p>Agendamento 100% on-line</p></div>
-                <div><p>Profissionais qualificados</p></div>
-                <div><p>Atendimento 5 estrelas</p></div>
-            </section>
-            <section id="servicos">
-                <h2>Serviços</h2>
-                <div class="listagem-servicos">
-                    <div class="card-servico">
-                        <img src="assets/corte_cabelo.jpg" alt="">
-                        <div>
-                            <p>Corte de cabelo</p>
-                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-                            <p>R$ 25,00</p>
-                            <button>Adicionar</button>
+            <div class="mb-5">
+                <label for="data_agendamento" class="form-label">Data agendamento</label>
+                <input type="date" class="form-control" id="data_agendamento" name="data_agendamento" value="{{ date('Y-m-d') }}">
+            </div>
+            <div class="mb-3">
+                <label for="servico_agendamento" class="form-label">Serviços</label>
+                <div class="accordion" id="accordionPanelsStayOpenExample">
+                    @foreach ($servicos as $servico)
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#servico_{{ $servico['id'] }}" aria-expanded="false" aria-controls="servico_{{ $servico['id'] }}">
+                                {{ $servico['titulo'] }}
+                                </button>
+                            </h2>
+                            <div id="servico_{{ $servico['id'] }}" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                <p>{{ $servico['descricao'] }}</p>
+                                <div class="row p-3 d-flex justify-content-center">
+                                    <button type="button" class="col-2 mx-5 my-2 btn btn-outline-dark">8h00</button>
+                                    <button type="button" class="col-2 mx-5 my-2 btn btn-outline-dark">10h00</button>
+                                    <button type="button" class="col-2 mx-5 my-2 btn btn-outline-dark">12h00</button>
+                                    <button type="button" class="col-2 mx-5 my-2 btn btn-outline-dark">14h00</button>
+                                    <button type="button" class="col-2 mx-5 my-2 btn btn-outline-dark">16h00</button>
+                                    <button type="button" class="col-2 mx-5 my-2 btn btn-outline-dark">18h00</button>
+                                </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+                    @endforeach
                 </div>
-            </section>
-        </main>
-        <footer>
-            <h3>Leila</h3>
-            <div>
-                <img class="icone" src="assets/instagram.png" alt="">
-                <img class="icone" src="assets/facebook.png" alt="">
-                <img class="icone" src="assets/twitter.png" alt="">
             </div>
-        </footer> -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-    </body>
-</html>
+            <div class="w-100 d-flex justify-content-end mt-5">
+                <input class="btn btn-success" type="submit" value="Realizar agendamento">
+            </div>
+        </form>
+    </section>
+</main>
+@endsection

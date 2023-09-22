@@ -16,10 +16,11 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::get('/', function () { return view('index'); })->name('index');
+Route::get('/', [AgendamentoController::class, 'index'])->name('index');
 Route::get('/user', function () { return view('user'); })->name('user');
 Route::get('/servico', function () { return view('servico'); })->name('servico');
 Route::get('/agendamento', [AgendamentoController::class, 'index'])->name('agendamento');
+Route::get('/listagem_agendamento', [AgendamentoController::class, 'index_listagem'])->name('listagem_agendamento');
 
 Route::post('/v1/user/create', [UserController::class, 'store'])->name('user_store');
 Route::post('/v1/servico/create', [ServicoController::class, 'store'])->name('servico_store');

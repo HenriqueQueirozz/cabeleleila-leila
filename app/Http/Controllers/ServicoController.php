@@ -40,7 +40,7 @@ class ServicoController extends Controller
         $Servico->imagem_serv       = $nomeImagemHashed;
         $Servico->save();
 
-        return redirect('/');
+        return view('servico');
     }
 
     public function update(Request $request){
